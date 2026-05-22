@@ -141,6 +141,7 @@ class PackageInstaller:
                     f"Install attempt {attempt + 1} failed for {package_name}. "
                     f"Retrying in {wait}s..."
                 )
+                logger.debug(f"Pip error output: {output}")
                 time.sleep(wait)
 
         elapsed = time.monotonic() - start
@@ -148,7 +149,7 @@ class PackageInstaller:
             package=package_name,
             version="",
             success=False,
-            error=f"Failed after {self.config.repository.max_retries} attempts",
+            error=f"Failed after {self.config.repository.max_retries} attempts. Last error: {output.strip()}",
             elapsed_seconds=elapsed,
         )
 

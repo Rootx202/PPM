@@ -64,7 +64,7 @@ def _parse_file(
                         )
                     )
     except Exception as e:
-        logger.warning(f"requirements-parser failed, using fallback: {e}")
+        logger.debug(f"requirements-parser failed, using fallback: {e}")
         _parse_file_manual(file_path, requirements, seen_files)
 
 
