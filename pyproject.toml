@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rootx-ppm"
-version = "1.0.0"
+version = "1.0.1"
 description = "PPM - Python Package Manager: Smart environment and package management CLI"
 readme = "README.md"
 license = { text = "MIT" }
