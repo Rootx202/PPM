@@ -64,6 +64,20 @@ cache_app = typer.Typer(
 )
 app.add_typer(cache_app, name="cache")
 
+@app.callback(invoke_without_command=True)
+def main_callback(ctx: typer.Context) -> None:
+    """PPM - Python Package Manager"""
+    from ppm.utils.console import print_banner
+    
+    # Only print banner if a command is actually going to run
+    # (typer doesn't run this for --help, but if invoked without command, we print help)
+    if ctx.invoked_subcommand is None:
+        print_banner()
+        print(ctx.get_help())
+        raise typer.Exit()
+    else:
+        print_banner()
+
 
 # ─── Context helpers ──────────────────────────────────────────────────────────
 
@@ -98,7 +112,6 @@ def cmd_init(
 
     Creates [bold].venv/[/bold] and upgrades pip automatically.
     """
-    print_banner()
     container = _get_container()
     container.config.venv_name = name
 

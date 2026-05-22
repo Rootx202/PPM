@@ -81,8 +81,17 @@ PPM_BANNER = """[ppm.brand]
 
 
 def print_banner() -> None:
-    """Print the PPM ASCII banner."""
+    """Print the PPM ASCII banner and check for updates."""
+    from ppm.update_checker import check_for_updates
+
     console.print(PPM_BANNER)
+    
+    # Check for updates in the background cache
+    new_version = check_for_updates()
+    if new_version:
+        console.print(f"[bold bright_yellow]🚀 A new version of PPM ({new_version}) is available![/bold bright_yellow]")
+        console.print("[dim]Update using: [bold]pipx upgrade rootx-ppm[/bold] (or pip install --upgrade rootx-ppm)[/dim]")
+        
     console.print()
 
 
