@@ -48,6 +48,7 @@ class PackageInstaller:
         package: str,
         version_spec: str = "",
         offline: bool = False,
+        upgrade: bool = False,
     ) -> InstallResult:
         """
         Install a single package.
@@ -56,6 +57,7 @@ class PackageInstaller:
             package: Package name (e.g. "fastapi").
             version_spec: Optional version constraint (e.g. ">=0.100.0").
             offline: If True, only use wheelhouse cache.
+            upgrade: If True, upgrade the package to the newest available version.
         """
         if not validate_package_name(package):
             return InstallResult(
@@ -70,7 +72,7 @@ class PackageInstaller:
 
         # ── 1. Try wheelhouse ─────────────────────────────────────────────────
         cached_wheel = self.wheelhouse.find_wheel(package)
-        if cached_wheel:
+        if cached_wheel and not upgrade:
             logger.debug(f"Found cached wheel for {package}: {cached_wheel.filename}")
             args = [
                 "install",
@@ -102,13 +104,14 @@ class PackageInstaller:
             )
 
         # ── 2. Install from PyPI with fallbacks ────────────────────────────────
-        return self._install_online(package_spec, package, start)
+        return self._install_online(package_spec, package, start, upgrade)
 
     def _install_online(
         self,
         package_spec: str,
         package_name: str,
         start: float,
+        upgrade: bool = False,
     ) -> InstallResult:
         """Install from PyPI using index args and retry logic."""
         index_args = self.repo.build_pip_index_args()
@@ -119,7 +122,10 @@ class PackageInstaller:
                 package_spec,
                 "--prefer-binary",
                 "--disable-pip-version-check",
-            ] + index_args
+            ]
+            if upgrade:
+                args.append("--upgrade")
+            args.extend(index_args)
 
             ok, output = self.env.run_pip(args, timeout=300)
             elapsed = time.monotonic() - start
