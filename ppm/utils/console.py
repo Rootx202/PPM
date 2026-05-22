@@ -58,7 +58,7 @@ def get_logger(name: str, level: str = "INFO") -> logging.Logger:
         datefmt="[%X]",
         handlers=[
             RichHandler(
-                console=err_console,
+                console=console,
                 rich_tracebacks=True,
                 tracebacks_show_locals=False,
                 show_path=False,
