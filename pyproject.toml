@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ppm"
+name = "rootx-ppm"
 version = "1.0.0"
 description = "PPM - Python Package Manager: Smart environment and package management CLI"
 readme = "README.md"

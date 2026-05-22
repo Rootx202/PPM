@@ -52,7 +52,11 @@ python3 -m venv .venv
 source .venv/bin/activate   # Linux/macOS
 # .venv\Scripts\activate    # Windows
 
+# Or install directly from source (if not using PyPI yet)
 pip install -e ".[dev]"
+
+# Once published to PyPI, you can install it globally via:
+# pip install rootx-ppm
 ```
 
 Or use the install script:
