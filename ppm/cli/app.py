@@ -374,6 +374,56 @@ def cmd_update(
             _abort(f"Update failed: {e}")
 
 
+# ─── ppm upgrade ─────────────────────────────────────────────────────────────
+
+@app.command("upgrade")
+@app.command("ug", hidden=True)
+def cmd_upgrade() -> None:
+    """
+    (ug) 🚀 Upgrade the PPM tool itself to the latest version.
+    """
+    import sys
+    import shutil
+    from ppm.utils.security import run_safe
+    from ppm.update_checker import check_for_updates
+    
+    section("PPM Self-Upgrade")
+    
+    latest = check_for_updates()
+    if latest:
+        step(f"New version found: [bold bright_yellow]{latest}[/bold bright_yellow]")
+    else:
+        info("Checking for the latest version on PyPI...")
+    
+    # Check if we are running via pipx or standard pip
+    pipx_path = shutil.which("pipx")
+    
+    try:
+        with make_progress("Upgrading PPM") as progress:
+            task = progress.add_task("Downloading and installing...", total=None)
+            
+            if pipx_path:
+                result = run_safe([pipx_path, "upgrade", "rootx-ppm"], capture=True)
+            else:
+                result = run_safe([sys.executable, "-m", "pip", "install", "--upgrade", "rootx-ppm"], capture=True)
+                
+            progress.update(task, completed=True)
+            
+        console.print()
+        if result.returncode == 0:
+            success("PPM successfully upgraded! 🎉")
+            # Clear cache so it checks again next time and removes the banner
+            from pathlib import Path
+            cache_file = Path.home() / ".config" / "ppm" / "update_check.json"
+            if cache_file.exists():
+                cache_file.unlink()
+        else:
+            _abort(f"Upgrade failed. Please upgrade manually:\npipx upgrade rootx-ppm\n\nError details:\n{result.stderr or result.stdout}")
+            
+    except Exception as e:
+        _abort(f"Upgrade error: {e}")
+
+
 # ─── ppm remove ──────────────────────────────────────────────────────────────
 
 @app.command("remove")

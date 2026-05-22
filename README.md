@@ -99,6 +99,7 @@ You can use either the full command or its shortcut (alias).
 | `sync` | `s` | Sync environment with requirements.txt. |
 | `install` | `in` | Install a package into the virtual environment. |
 | `update` | `up` | Update a package or all packages to latest versions. |
+| `upgrade` | `ug` | Upgrade the PPM tool itself to the latest version. |
 | `remove` | `rm` | Remove a package from the virtual environment. |
 | `search` | `se` | Search PyPI for packages matching a query. |
 | `audit` | `au` | Scan for vulnerabilities and deprecated packages. |
