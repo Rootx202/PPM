@@ -94,7 +94,7 @@ def cmd_init(
     name: Annotated[str, typer.Option("--name", "-n", help="Venv directory name.")] = ".venv",
 ) -> None:
     """
-    🚀 Initialize a new Python virtual environment in the current directory.
+    (i) 🚀 Initialize a new Python virtual environment in the current directory.
 
     Creates [bold].venv/[/bold] and upgrades pip automatically.
     """
@@ -150,7 +150,7 @@ def cmd_sync(
     no_lock: Annotated[bool, typer.Option("--no-lock", help="Skip generating lock file.")] = False,
 ) -> None:
     """
-    🔄 Sync virtual environment with [bold]requirements.txt[/bold].
+    (s) 🔄 Sync virtual environment with [bold]requirements.txt[/bold].
 
     Installs missing packages and validates versions.
     """
@@ -223,7 +223,7 @@ def cmd_install(
     version: Annotated[Optional[str], typer.Option("--version", "-v", help="Version specifier, e.g. '>=1.0'")] = None,
 ) -> None:
     """
-    📦 Install a package into the virtual environment.
+    (in) 📦 Install a package into the virtual environment.
 
     Uses wheelhouse cache first, then falls back to PyPI with mirror support.
     """
@@ -281,7 +281,7 @@ def cmd_remove(
     yes: Annotated[bool, typer.Option("--yes", "-y", help="Skip confirmation.")] = False,
 ) -> None:
     """
-    🗑️  Remove a package from the virtual environment.
+    (rm) 🗑️  Remove a package from the virtual environment.
     """
     container = _get_container()
 
@@ -317,7 +317,7 @@ def cmd_search(
     limit: Annotated[int, typer.Option("--limit", "-n", help="Max results to show.")] = 10,
 ) -> None:
     """
-    🔍 Search PyPI for packages matching the query.
+    (se) 🔍 Search PyPI for packages matching the query.
     """
     section(f"Searching PyPI: '{query}'")
     container = _get_container()
@@ -360,7 +360,7 @@ def cmd_audit(
     fail_on_vuln: Annotated[bool, typer.Option("--fail", help="Exit with code 1 if vulnerabilities found.")] = False,
 ) -> None:
     """
-    🔐 Scan for security vulnerabilities and deprecated packages.
+    (au) 🔐 Scan for security vulnerabilities and deprecated packages.
     """
     container = _get_container()
 
@@ -444,7 +444,7 @@ def cmd_repair(
     yes: Annotated[bool, typer.Option("--yes", "-y", help="Skip confirmation.")] = False,
 ) -> None:
     """
-    🔧 Repair a broken virtual environment.
+    (rp) 🔧 Repair a broken virtual environment.
 
     Upgrades pip, detects conflicts, cleans caches, and reinstalls packages.
     """
@@ -482,7 +482,7 @@ def cmd_repair(
 @app.command("doc", hidden=True)
 def cmd_doctor() -> None:
     """
-    🩺 Run a full diagnostic check on your PPM environment.
+    (doc) 🩺 Run a full diagnostic check on your PPM environment.
     """
     section("PPM Doctor")
     container = _get_container()
@@ -527,7 +527,7 @@ def cmd_config(
     set_key: Annotated[Optional[str], typer.Option("--set", help="Set a config key (key=value).")] = None,
 ) -> None:
     """
-    ⚙️  View or modify PPM configuration.
+    (cfg) ⚙️  View or modify PPM configuration.
 
     Config is stored at [bold]~/.config/ppm/config.toml[/bold].
     """
@@ -584,7 +584,7 @@ def cmd_wheelhouse_build(
     requirements: Annotated[Path, typer.Option("--requirements", "-r", help="Path to requirements.txt")] = Path("requirements.txt"),
 ) -> None:
     """
-    🏗️  Download wheels for all requirements into the local wheelhouse cache.
+    (b) 🏗️  Download wheels for all requirements into the local wheelhouse cache.
     """
     container = _get_container()
 
@@ -623,7 +623,7 @@ def cmd_wheelhouse_build(
 @wheelhouse_app.command("list")
 @wheelhouse_app.command("ls", hidden=True)
 def cmd_wheelhouse_list() -> None:
-    """📋 List all cached wheels in the wheelhouse."""
+    """(ls) 📋 List all cached wheels in the wheelhouse."""
     container = _get_container()
     stats = container.wheelhouse_service.get_stats()
     wheels = container.wheelhouse_service.list_wheels()
@@ -651,7 +651,7 @@ def cmd_wheelhouse_list() -> None:
 @wheelhouse_app.command("stats")
 @wheelhouse_app.command("st", hidden=True)
 def cmd_wheelhouse_stats() -> None:
-    """📊 Show wheelhouse cache statistics."""
+    """(st) 📊 Show wheelhouse cache statistics."""
     container = _get_container()
     stats = container.wheelhouse_service.get_stats()
 
@@ -674,7 +674,7 @@ def cmd_cache_clean(
     yes: Annotated[bool, typer.Option("--yes", "-y", help="Skip confirmation.")] = False,
 ) -> None:
     """
-    🧹 Clean the PPM wheelhouse cache.
+    (cl) 🧹 Clean the PPM wheelhouse cache.
     """
     container = _get_container()
 
