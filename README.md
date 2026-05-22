@@ -42,21 +42,24 @@ PPM is a **professional Python environment and package management CLI** that wra
 
 ### Installation
 
+The recommended way to install Python CLI tools globally is using `pipx` (which avoids `externally-managed-environment` errors on modern Linux):
+
 ```bash
-# Clone the repository
+# Install globally via pipx (Recommended)
+pipx install rootx-ppm
+
+# Or using pip in an isolated virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+pip install rootx-ppm
+```
+
+If you are developing or want to install from source:
+
+```bash
 git clone https://github.com/Rootx202/PPM.git
 cd PPM
-
-# Install in a virtual environment (recommended)
-python3 -m venv .venv
-source .venv/bin/activate   # Linux/macOS
-# .venv\Scripts\activate    # Windows
-
-# Or install directly from source (if not using PyPI yet)
 pip install -e ".[dev]"
-
-# Once published to PyPI, you can install it globally via:
-# pip install rootx-ppm
 ```
 
 Or use the install script:
