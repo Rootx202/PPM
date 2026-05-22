@@ -49,20 +49,22 @@ app = typer.Typer(
 # Sub-app for wheelhouse commands
 wheelhouse_app = typer.Typer(
     name="wheelhouse",
-    help="Manage the local wheel cache (wheelhouse).",
+    help="(w) Manage the local wheel cache (wheelhouse).",
     rich_markup_mode="rich",
     context_settings={"help_option_names": ["-h", "--help"]},
 )
 app.add_typer(wheelhouse_app, name="wheelhouse")
+app.add_typer(wheelhouse_app, name="w", hidden=True)
 
 # Sub-app for cache commands
 cache_app = typer.Typer(
     name="cache",
-    help="Manage pip and PPM caches.",
+    help="(c) Manage pip and PPM caches.",
     rich_markup_mode="rich",
     context_settings={"help_option_names": ["-h", "--help"]},
 )
 app.add_typer(cache_app, name="cache")
+app.add_typer(cache_app, name="c", hidden=True)
 
 @app.callback(invoke_without_command=True)
 def main_callback(ctx: typer.Context) -> None:
