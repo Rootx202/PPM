@@ -82,9 +82,31 @@ ppm doctor
 
 ---
 
-## 📦 All Commands
+## 📦 All Commands & Shortcuts
 
-### `ppm init` — Initialize Environment
+You can use either the full command or its shortcut (alias).
+
+| Command | Shortcut | Description |
+|---------|----------|-------------|
+| `init` | `i` | Initialize a new Python virtual environment. |
+| `sync` | `s` | Sync environment with requirements.txt. |
+| `install` | `in` | Install a package into the virtual environment. |
+| `remove` | `rm` | Remove a package from the virtual environment. |
+| `search` | `se` | Search PyPI for packages matching a query. |
+| `audit` | `au` | Scan for vulnerabilities and deprecated packages. |
+| `repair` | `rp` | Repair a broken virtual environment. |
+| `doctor` | `doc` | Run full diagnostic checks on your environment. |
+| `config` | `cfg` | View or modify PPM configuration. |
+| `wheelhouse build` | `b` | Download wheels into the local cache. |
+| `wheelhouse list` | `ls` | List all cached wheels. |
+| `wheelhouse stats` | `st` | Show wheelhouse cache statistics. |
+| `cache clean` | `cl` | Clean the PPM wheelhouse cache. |
+
+---
+
+## 🛠️ Detailed Command Guide
+
+### `ppm init` (Alias: `i`) — Initialize Environment
 
 ```bash
 ppm init                    # Create .venv in current directory
@@ -101,7 +123,7 @@ Windows:       .venv\Scripts\activate
 
 ---
 
-### `ppm sync` — Sync Requirements
+### `ppm sync` (Alias: `s`) — Sync Requirements
 
 ```bash
 ppm sync                           # Sync with requirements.txt
@@ -114,7 +136,7 @@ Generates `ppm.lock.json` with pinned versions after a successful sync.
 
 ---
 
-### `ppm install` — Install Package
+### `ppm install` (Alias: `in`) — Install Package
 
 ```bash
 ppm install fastapi               # Latest version
@@ -130,7 +152,7 @@ Install strategy (in order):
 
 ---
 
-### `ppm remove` — Remove Package
+### `ppm remove` (Alias: `rm`) — Remove Package
 
 ```bash
 ppm remove requests       # With confirmation prompt
@@ -139,7 +161,7 @@ ppm remove requests -y    # Skip confirmation
 
 ---
 
-### `ppm search` — Search PyPI
+### `ppm search` (Alias: `se`) — Search PyPI
 
 ```bash
 ppm search fastapi         # Search for packages
@@ -162,7 +184,7 @@ Output:
 
 ---
 
-### `ppm audit` — Security Audit
+### `ppm audit` (Alias: `au`) — Security Audit
 
 ```bash
 ppm audit                         # Audit installed packages
@@ -184,7 +206,7 @@ Output example:
 
 ---
 
-### `ppm repair` — Repair Environment
+### `ppm repair` (Alias: `rp`) — Repair Environment
 
 ```bash
 ppm repair                          # Auto-repair
