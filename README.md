@@ -98,6 +98,7 @@ You can use either the full command or its shortcut (alias).
 | `init` | `i` | Initialize a new Python virtual environment. |
 | `sync` | `s` | Sync environment with requirements.txt. |
 | `install` | `in` | Install a package into the virtual environment. |
+| `update` | `up` | Update a package or all packages to latest versions. |
 | `remove` | `rm` | Remove a package from the virtual environment. |
 | `search` | `se` | Search PyPI for packages matching a query. |
 | `audit` | `au` | Scan for vulnerabilities and deprecated packages. |
@@ -156,6 +157,18 @@ Install strategy (in order):
 1. Check local wheelhouse cache
 2. Install from PyPI with configured mirrors
 3. Retry with exponential back-off
+
+---
+
+### `ppm update` (Alias: `up`) — Update Package(s)
+
+```bash
+ppm update                        # Update ALL packages in requirements.txt
+ppm update fastapi                # Update a specific package to latest
+ppm update -r requirements/dev.txt # Update from a specific file
+```
+
+This bypasses the local wheelhouse cache (unless already latest) and forcefully upgrades the requested packages.
 
 ---
 

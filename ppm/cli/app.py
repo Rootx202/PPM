@@ -272,6 +272,93 @@ def cmd_install(
         _abort(f"Install error: {e}")
 
 
+# ─── ppm update ──────────────────────────────────────────────────────────────
+
+@app.command("update")
+@app.command("up", hidden=True)
+def cmd_update(
+    package: Annotated[Optional[str], typer.Argument(help="Package name to update. If omitted, updates all packages from requirements.txt")] = None,
+    requirements: Annotated[Path, typer.Option("--requirements", "-r", help="Path to requirements.txt")] = Path("requirements.txt"),
+) -> None:
+    """
+    (up) ⬆️  Update a package or all packages to the latest versions.
+    """
+    container = _get_container()
+
+    try:
+        container.environment_service.require_env()
+    except RuntimeError as e:
+        _abort(str(e))
+
+    if package:
+        section(f"Updating: {package}")
+        try:
+            with make_progress(f"Updating {package}") as progress:
+                task = progress.add_task(f"Updating [bold]{package}[/bold]...", total=None)
+                result = container.install_service.install(
+                    package, version_spec="", offline=False, upgrade=True
+                )
+                progress.update(task, completed=True)
+
+            console.print()
+            if result.success:
+                success(
+                    f"Updated [ppm.package]{result.package}[/ppm.package] "
+                    f"to [ppm.version]{result.version}[/ppm.version] "
+                    f"in {result.elapsed_seconds:.2f}s"
+                )
+            else:
+                _abort(f"Update failed: {result.error}")
+        except Exception as e:
+            _abort(f"Update error: {e}")
+    else:
+        # Update all from requirements.txt
+        section("Update All Packages")
+        if not requirements.exists():
+            _abort(f"Requirements file not found: {requirements.resolve()}")
+        
+        step(f"Reading: [ppm.path]{requirements.resolve()}[/ppm.path]")
+        try:
+            with make_install_progress() as progress:
+                task = progress.add_task("Updating packages...", total=None)
+                # Parse requirements and install with --upgrade
+                from ppm.parsers import parse_requirements
+                reqs = parse_requirements(requirements)
+                results = []
+                for req in reqs:
+                    if req.url:
+                        res = container.install_service.install(req.url, upgrade=True)
+                    else:
+                        res = container.install_service.install(req.name, req.version_spec, upgrade=True)
+                    results.append(res)
+                progress.update(task, completed=True)
+
+            console.print()
+            table = make_table(
+                "Update Results",
+                ("Status", "ppm.success"),
+                ("Package", "ppm.package"),
+            )
+            failed = 0
+            for r in results:
+                if r.success:
+                    table.add_row("✅ Updated", r.package)
+                else:
+                    failed += 1
+                    table.add_row("[ppm.error]❌ Failed[/ppm.error]", f"[ppm.error]{r.package}[/ppm.error]")
+            
+            console.print(table)
+            console.print()
+            
+            if failed == 0:
+                success(f"Successfully updated {len(results)} package(s).")
+            else:
+                warning(f"Update finished with {failed} failure(s).")
+                raise typer.Exit(1)
+        except Exception as e:
+            _abort(f"Update failed: {e}")
+
+
 # ─── ppm remove ──────────────────────────────────────────────────────────────
 
 @app.command("remove")
