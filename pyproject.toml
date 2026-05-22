@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "PPM - Python Package Manager: Smart environment and package management CLI"
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "PPM Authors", email = "ppm@example.com" }]
+authors = [{ name = "RootX" }]
 requires-python = ">=3.12"
 keywords = ["python", "package-manager", "venv", "pip", "wheelhouse", "cli"]
 classifiers = [
@@ -52,10 +52,10 @@ dev = [
 ppm = "ppm.cli.app:main"
 
 [project.urls]
-Homepage = "https://github.com/example/ppm"
-Documentation = "https://ppm.readthedocs.io"
-Repository = "https://github.com/example/ppm"
-Issues = "https://github.com/example/ppm/issues"
+Homepage = "https://github.com/Rootx202/PPM"
+Documentation = "https://github.com/Rootx202/PPM"
+Repository = "https://github.com/Rootx202/PPM"
+Issues = "https://github.com/Rootx202/PPM/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]

@@ -44,8 +44,8 @@ PPM is a **professional Python environment and package management CLI** that wra
 
 ```bash
 # Clone the repository
-git clone https://github.com/example/ppm.git
-cd ppm
+git clone https://github.com/Rootx202/PPM.git
+cd PPM
 
 # Install in a virtual environment (recommended)
 python3 -m venv .venv
@@ -438,6 +438,6 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Built with ❤️ for Python developers**
+**Built with ❤️ by RootX for Python developers**
 
 </div>
