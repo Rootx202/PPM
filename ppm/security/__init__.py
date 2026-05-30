@@ -9,6 +9,7 @@ from typing import Optional
 
 from ppm.models import AuditReport, Vulnerability, VulnerabilitySeverity
 from ppm.utils.console import get_logger
+from ppm.utils.security import run_safe
 
 logger = get_logger(__name__)
 
@@ -48,12 +49,10 @@ def run_audit(
         cmd += ["-r", str(requirements_file)]
 
     try:
-        result = subprocess.run(
+        result = run_safe(
             cmd,
-            capture_output=True,
-            text=True,
+            capture=True,
             timeout=120,
-            shell=False,
         )
         output = result.stdout or result.stderr
         return _parse_pip_audit_output(output)

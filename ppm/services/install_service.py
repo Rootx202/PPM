@@ -39,9 +39,10 @@ class InstallService:
         package: str,
         version_spec: str = "",
         offline: bool = False,
+        upgrade: bool = False,
     ) -> InstallResult:
         """Install a package."""
-        return self.installer.install(package, version_spec, offline=offline)
+        return self.installer.install(package, version_spec, offline=offline, upgrade=upgrade)
 
     def uninstall(self, package: str) -> InstallResult:
         """Uninstall a package."""

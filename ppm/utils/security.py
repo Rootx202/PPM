@@ -43,7 +43,11 @@ def validate_url(url: str) -> bool:
     """Validate that a URL is safe and well-formed."""
     try:
         parsed = urlparse(url)
-        return parsed.scheme in _ALLOWED_SCHEMES and bool(parsed.netloc)
+        is_valid = parsed.scheme in _ALLOWED_SCHEMES and bool(parsed.netloc)
+        if is_valid and parsed.scheme == "http":
+            from ppm.utils.console import warning
+            warning(f"Insecure HTTP URL detected: {url}. HTTPS is recommended for security.")
+        return is_valid
     except Exception:
         return False
 
