@@ -7,7 +7,6 @@ import shutil
 import sys
 import venv
 from pathlib import Path
-from typing import Optional
 
 from ppm.models import EnvironmentInfo, OSType
 from ppm.utils.console import get_logger
@@ -72,9 +71,7 @@ class EnvironmentManager:
         Raises RuntimeError if creation fails.
         """
         if self.exists():
-            raise FileExistsError(
-                f"Virtual environment already exists at {self.venv_path}"
-            )
+            raise FileExistsError(f"Virtual environment already exists at {self.venv_path}")
 
         logger.debug(f"Creating venv at {self.venv_path}")
         builder = venv.EnvBuilder(
@@ -132,6 +129,7 @@ class EnvironmentManager:
                 capture=True,
             )
             import json
+
             packages_count = len(json.loads(result.stdout))
         except Exception:
             pass
@@ -185,12 +183,13 @@ class EnvironmentManager:
             )
             if result.returncode == 0:
                 import json
+
                 return json.loads(result.stdout)
         except Exception:
             pass
         return []
 
-    def is_package_installed(self, package_name: str) -> Optional[str]:
+    def is_package_installed(self, package_name: str) -> str | None:
         """Check if a package is installed; return version string or None."""
         packages = self.list_packages()
         name_lower = package_name.lower().replace("-", "_")

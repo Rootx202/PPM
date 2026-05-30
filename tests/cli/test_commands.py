@@ -1,7 +1,7 @@
 """CLI command tests using Typer test client."""
 
-import pytest
 from typer.testing import CliRunner
+
 from ppm.cli.app import app
 
 runner = CliRunner()
@@ -74,7 +74,7 @@ class TestCLIInit:
 class TestCLISearch:
     def test_search_no_network_graceful(self, monkeypatch):
         """Search should not crash, even with network issues."""
-        from unittest.mock import AsyncMock, patch
+        from unittest.mock import patch
 
         async def mock_search(*args, **kwargs):
             return []

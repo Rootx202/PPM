@@ -43,7 +43,12 @@ def validate_url(url: str) -> bool:
     """Validate that a URL is safe and well-formed."""
     try:
         parsed = urlparse(url)
-        return parsed.scheme in _ALLOWED_SCHEMES and bool(parsed.netloc)
+        is_valid = parsed.scheme in _ALLOWED_SCHEMES and bool(parsed.netloc)
+        if is_valid and parsed.scheme == "http":
+            from ppm.utils.console import warning
+
+            warning(f"Insecure HTTP URL detected: {url}. HTTPS is recommended for security.")
+        return is_valid
     except Exception:
         return False
 
@@ -57,6 +62,7 @@ def validate_pypi_url(url: str) -> bool:
 
 
 # ─── Path safety ──────────────────────────────────────────────────────────────
+
 
 def safe_path(path: Path, base: Path) -> bool:
     """Ensure path is within the base directory (prevent path traversal)."""
@@ -76,6 +82,7 @@ def ensure_safe_dir(path: Path) -> Path:
 
 
 # ─── Subprocess safety ────────────────────────────────────────────────────────
+
 
 def safe_subprocess_args(args: list[str]) -> list[str]:
     """

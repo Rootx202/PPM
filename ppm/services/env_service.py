@@ -53,6 +53,5 @@ class EnvironmentService:
         """Raise RuntimeError if no venv exists in the project directory."""
         if not self.manager.exists():
             raise RuntimeError(
-                f"No virtual environment found at {self.manager.venv_path}. "
-                "Run 'ppm init' first."
+                f"No virtual environment found at {self.manager.venv_path}. Run 'ppm init' first."
             )

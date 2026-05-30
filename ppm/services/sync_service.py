@@ -52,9 +52,7 @@ class SyncService:
         Returns a SyncResult with lists of installed/satisfied/failed packages.
         """
         if not requirements_file.exists():
-            raise FileNotFoundError(
-                f"Requirements file not found: {requirements_file}"
-            )
+            raise FileNotFoundError(f"Requirements file not found: {requirements_file}")
 
         requirements = parse_requirements(requirements_file)
         result = SyncResult(total=len(requirements))
@@ -79,16 +77,12 @@ class SyncService:
                 else:
                     result.failed.append(pkg_display)
             elif req.name:
-                install_result = self.installer.install(
-                    req.name, req.version_spec, offline=offline
-                )
+                install_result = self.installer.install(req.name, req.version_spec, offline=offline)
                 if install_result.success:
                     result.installed.append(pkg_display)
                 else:
                     result.failed.append(pkg_display)
-                    logger.warning(
-                        f"Failed to install {pkg_display}: {install_result.error}"
-                    )
+                    logger.warning(f"Failed to install {pkg_display}: {install_result.error}")
 
         # Generate lock file
         if generate_lock and not result.failed:
@@ -101,8 +95,9 @@ class SyncService:
         if not spec:
             return True
         try:
-            from packaging.version import Version
             from packaging.specifiers import SpecifierSet
+            from packaging.version import Version
+
             return Version(installed) in SpecifierSet(spec)
         except Exception:
             return True  # Assume satisfied on parse error

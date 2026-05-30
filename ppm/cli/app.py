@@ -2,21 +2,18 @@
 
 from __future__ import annotations
 
-import asyncio
 import sys
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich.panel import Panel
-from rich.table import Table
 from rich.text import Text
 
 from ppm.config import PPMConfig
 from ppm.core import ServiceContainer
 from ppm.models import VulnerabilitySeverity
 from ppm.utils.console import (
-    PPM_THEME,
     console,
     error,
     info,
@@ -37,7 +34,7 @@ from ppm.utils.console import (
 app = typer.Typer(
     name="ppm",
     help="[bold cyan]PPM[/bold cyan] - Python Package Manager\n\n"
-         "Smart Python environment and package management CLI.",
+    "Smart Python environment and package management CLI.",
     rich_markup_mode="rich",
     no_args_is_help=True,
     add_completion=True,
@@ -66,11 +63,11 @@ cache_app = typer.Typer(
 app.add_typer(cache_app, name="cache")
 app.add_typer(cache_app, name="c", hidden=True)
 
+
 @app.callback(invoke_without_command=True)
 def main_callback(ctx: typer.Context) -> None:
     """PPM - Python Package Manager"""
-    from ppm.utils.console import print_banner
-    
+
     # Only print banner if a command is actually going to run
     # (typer doesn't run this for --help, but if invoked without command, we print help)
     if ctx.invoked_subcommand is None:
@@ -83,12 +80,13 @@ def main_callback(ctx: typer.Context) -> None:
 
 # ─── Context helpers ──────────────────────────────────────────────────────────
 
+
 def _get_project_dir() -> Path:
     """Return the current working directory as project root."""
     return Path.cwd()
 
 
-def _get_container(project_dir: Optional[Path] = None) -> ServiceContainer:
+def _get_container(project_dir: Path | None = None) -> ServiceContainer:
     """Build and return the DI container."""
     cwd = project_dir or _get_project_dir()
     config = PPMConfig.load()
@@ -103,10 +101,13 @@ def _abort(msg: str) -> None:
 
 # ─── ppm init ────────────────────────────────────────────────────────────────
 
+
 @app.command("init")
 @app.command("i", hidden=True)
 def cmd_init(
-    force: Annotated[bool, typer.Option("--force", "-f", help="Recreate venv if it already exists.")] = False,
+    force: Annotated[
+        bool, typer.Option("--force", "-f", help="Recreate venv if it already exists.")
+    ] = False,
     name: Annotated[str, typer.Option("--name", "-n", help="Venv directory name.")] = ".venv",
 ) -> None:
     """
@@ -157,11 +158,16 @@ def cmd_init(
 
 # ─── ppm sync ────────────────────────────────────────────────────────────────
 
+
 @app.command("sync")
 @app.command("s", hidden=True)
 def cmd_sync(
-    requirements: Annotated[Path, typer.Option("--requirements", "-r", help="Path to requirements.txt")] = Path("requirements.txt"),
-    offline: Annotated[bool, typer.Option("--offline", help="Use wheelhouse only, no network.")] = False,
+    requirements: Annotated[
+        Path, typer.Option("--requirements", "-r", help="Path to requirements.txt")
+    ] = Path("requirements.txt"),
+    offline: Annotated[
+        bool, typer.Option("--offline", help="Use wheelhouse only, no network.")
+    ] = False,
     no_lock: Annotated[bool, typer.Option("--no-lock", help="Skip generating lock file.")] = False,
 ) -> None:
     """
@@ -217,8 +223,7 @@ def cmd_sync(
             )
         else:
             warning(
-                f"Sync finished with {len(result.failed)} failure(s): "
-                + ", ".join(result.failed)
+                f"Sync finished with {len(result.failed)} failure(s): " + ", ".join(result.failed)
             )
             raise typer.Exit(1)
 
@@ -230,12 +235,15 @@ def cmd_sync(
 
 # ─── ppm install ─────────────────────────────────────────────────────────────
 
+
 @app.command("install")
 @app.command("in", hidden=True)
 def cmd_install(
     package: Annotated[str, typer.Argument(help="Package name to install (e.g. fastapi>=0.100)")],
     offline: Annotated[bool, typer.Option("--offline", help="Use wheelhouse only.")] = False,
-    version: Annotated[Optional[str], typer.Option("--version", "-v", help="Version specifier, e.g. '>=1.0'")] = None,
+    version: Annotated[
+        str | None, typer.Option("--version", "-v", help="Version specifier, e.g. '>=1.0'")
+    ] = None,
 ) -> None:
     """
     (in) 📦 Install a package into the virtual environment.
@@ -257,6 +265,7 @@ def cmd_install(
 
     # Parse if user provides "fastapi>=0.100" style
     import re
+
     m = re.match(r"^([a-zA-Z0-9_.-]+)(.*)", package)
     if m:
         pkg_name = m.group(1)
@@ -289,11 +298,19 @@ def cmd_install(
 
 # ─── ppm update ──────────────────────────────────────────────────────────────
 
+
 @app.command("update")
 @app.command("up", hidden=True)
 def cmd_update(
-    package: Annotated[Optional[str], typer.Argument(help="Package name to update. If omitted, updates all packages from requirements.txt")] = None,
-    requirements: Annotated[Path, typer.Option("--requirements", "-r", help="Path to requirements.txt")] = Path("requirements.txt"),
+    package: Annotated[
+        str | None,
+        typer.Argument(
+            help="Package name to update. If omitted, updates all packages from requirements.txt"
+        ),
+    ] = None,
+    requirements: Annotated[
+        Path, typer.Option("--requirements", "-r", help="Path to requirements.txt")
+    ] = Path("requirements.txt"),
 ) -> None:
     """
     (up) ⬆️  Update a package or all packages to the latest versions.
@@ -331,20 +348,23 @@ def cmd_update(
         section("Update All Packages")
         if not requirements.exists():
             _abort(f"Requirements file not found: {requirements.resolve()}")
-        
+
         step(f"Reading: [ppm.path]{requirements.resolve()}[/ppm.path]")
         try:
             with make_install_progress() as progress:
                 task = progress.add_task("Updating packages...", total=None)
                 # Parse requirements and install with --upgrade
                 from ppm.parsers import parse_requirements
+
                 reqs = parse_requirements(requirements)
                 results = []
                 for req in reqs:
                     if req.url:
                         res = container.install_service.install(req.url, upgrade=True)
                     else:
-                        res = container.install_service.install(req.name, req.version_spec, upgrade=True)
+                        res = container.install_service.install(
+                            req.name, req.version_spec, upgrade=True
+                        )
                     results.append(res)
                 progress.update(task, completed=True)
 
@@ -360,11 +380,13 @@ def cmd_update(
                     table.add_row("✅ Updated", r.package)
                 else:
                     failed += 1
-                    table.add_row("[ppm.error]❌ Failed[/ppm.error]", f"[ppm.error]{r.package}[/ppm.error]")
-            
+                    table.add_row(
+                        "[ppm.error]❌ Failed[/ppm.error]", f"[ppm.error]{r.package}[/ppm.error]"
+                    )
+
             console.print(table)
             console.print()
-            
+
             if failed == 0:
                 success(f"Successfully updated {len(results)} package(s).")
             else:
@@ -376,55 +398,65 @@ def cmd_update(
 
 # ─── ppm upgrade ─────────────────────────────────────────────────────────────
 
+
 @app.command("upgrade")
 @app.command("ug", hidden=True)
 def cmd_upgrade() -> None:
     """
     (ug) 🚀 Upgrade the PPM tool itself to the latest version.
     """
-    import sys
     import shutil
-    from ppm.utils.security import run_safe
+
     from ppm.update_checker import check_for_updates
-    
+    from ppm.utils.security import run_safe
+
     section("PPM Self-Upgrade")
-    
+
     latest = check_for_updates()
     if latest:
         step(f"New version found: [bold bright_yellow]{latest}[/bold bright_yellow]")
     else:
         info("Checking for the latest version on PyPI...")
-    
+
     # Check if we are running via pipx or standard pip
     pipx_path = shutil.which("pipx")
-    
+
     try:
         with make_progress("Upgrading PPM") as progress:
             task = progress.add_task("Downloading and installing...", total=None)
-            
+
             if pipx_path:
                 result = run_safe([pipx_path, "upgrade", "rootx-ppm"], capture=True)
             else:
-                result = run_safe([sys.executable, "-m", "pip", "install", "--upgrade", "rootx-ppm"], capture=True)
-                
+                result = run_safe(
+                    [sys.executable, "-m", "pip", "install", "--upgrade", "rootx-ppm"], capture=True
+                )
+
             progress.update(task, completed=True)
-            
+
         console.print()
         if result.returncode == 0:
             success("PPM successfully upgraded! 🎉")
             # Clear cache so it checks again next time and removes the banner
             from pathlib import Path
+
             cache_file = Path.home() / ".config" / "ppm" / "update_check.json"
             if cache_file.exists():
                 cache_file.unlink()
         else:
-            _abort(f"Upgrade failed. Please upgrade manually:\npipx upgrade rootx-ppm\n\nError details:\n{result.stderr or result.stdout}")
-            
+            err_details = result.stderr or result.stdout
+            _abort(
+                "Upgrade failed. Please upgrade manually:\n"
+                "pipx upgrade rootx-ppm\n\n"
+                f"Error details:\n{err_details}"
+            )
+
     except Exception as e:
         _abort(f"Upgrade error: {e}")
 
 
 # ─── ppm remove ──────────────────────────────────────────────────────────────
+
 
 @app.command("remove")
 @app.command("rm", hidden=True)
@@ -461,6 +493,7 @@ def cmd_remove(
 
 
 # ─── ppm search ──────────────────────────────────────────────────────────────
+
 
 @app.command("search")
 @app.command("se", hidden=True)
@@ -500,16 +533,24 @@ def cmd_search(
 
     console.print(table)
     console.print()
-    muted(f"Showing {min(len(results), limit)} of {len(results)} results. Install with: ppm install <name>")
+    muted(
+        f"Showing {min(len(results), limit)} of {len(results)} results. "
+        "Install with: ppm install <name>"
+    )
 
 
 # ─── ppm audit ───────────────────────────────────────────────────────────────
 
+
 @app.command("audit")
 @app.command("au", hidden=True)
 def cmd_audit(
-    requirements: Annotated[Optional[Path], typer.Option("--requirements", "-r", help="Audit a requirements.txt file.")] = None,
-    fail_on_vuln: Annotated[bool, typer.Option("--fail", help="Exit with code 1 if vulnerabilities found.")] = False,
+    requirements: Annotated[
+        Path | None, typer.Option("--requirements", "-r", help="Audit a requirements.txt file.")
+    ] = None,
+    fail_on_vuln: Annotated[
+        bool, typer.Option("--fail", help="Exit with code 1 if vulnerabilities found.")
+    ] = False,
 ) -> None:
     """
     (au) 🔐 Scan for security vulnerabilities and deprecated packages.
@@ -589,10 +630,13 @@ def cmd_audit(
 
 # ─── ppm repair ──────────────────────────────────────────────────────────────
 
+
 @app.command("repair")
 @app.command("rp", hidden=True)
 def cmd_repair(
-    requirements: Annotated[Optional[Path], typer.Option("--requirements", "-r", help="Reinstall from requirements.txt")] = None,
+    requirements: Annotated[
+        Path | None, typer.Option("--requirements", "-r", help="Reinstall from requirements.txt")
+    ] = None,
     yes: Annotated[bool, typer.Option("--yes", "-y", help="Skip confirmation.")] = False,
 ) -> None:
     """
@@ -630,6 +674,7 @@ def cmd_repair(
 
 # ─── ppm doctor ──────────────────────────────────────────────────────────────
 
+
 @app.command("doctor")
 @app.command("doc", hidden=True)
 def cmd_doctor() -> None:
@@ -654,7 +699,11 @@ def cmd_doctor() -> None:
     )
 
     for check in report.checks:
-        status = "[ppm.success]✅ Pass[/ppm.success]" if check.passed else "[ppm.error]❌ Fail[/ppm.error]"
+        status = (
+            "[ppm.success]✅ Pass[/ppm.success]"
+            if check.passed
+            else "[ppm.error]❌ Fail[/ppm.error]"
+        )
         details = check.message
         if not check.passed and check.suggestion:
             details += f"\n  [dim]→ {check.suggestion}[/dim]"
@@ -672,11 +721,14 @@ def cmd_doctor() -> None:
 
 # ─── ppm config show ─────────────────────────────────────────────────────────
 
+
 @app.command("config")
 @app.command("cfg", hidden=True)
 def cmd_config(
     show: Annotated[bool, typer.Option("--show", help="Show current configuration.")] = True,
-    set_key: Annotated[Optional[str], typer.Option("--set", help="Set a config key (key=value).")] = None,
+    set_key: Annotated[
+        str | None, typer.Option("--set", help="Set a config key (key=value).")
+    ] = None,
 ) -> None:
     """
     (cfg) ⚙️  View or modify PPM configuration.
@@ -730,10 +782,13 @@ def cmd_config(
 
 # ─── ppm wheelhouse build ────────────────────────────────────────────────────
 
+
 @wheelhouse_app.command("build")
 @wheelhouse_app.command("b", hidden=True)
 def cmd_wheelhouse_build(
-    requirements: Annotated[Path, typer.Option("--requirements", "-r", help="Path to requirements.txt")] = Path("requirements.txt"),
+    requirements: Annotated[
+        Path, typer.Option("--requirements", "-r", help="Path to requirements.txt")
+    ] = Path("requirements.txt"),
 ) -> None:
     """
     (b) 🏗️  Download wheels for all requirements into the local wheelhouse cache.
@@ -819,10 +874,13 @@ def cmd_wheelhouse_stats() -> None:
 
 # ─── ppm cache clean ──────────────────────────────────────────────────────────
 
+
 @cache_app.command("clean")
 @cache_app.command("cl", hidden=True)
 def cmd_cache_clean(
-    keep_latest: Annotated[bool, typer.Option("--keep-latest/--all", help="Keep only latest wheel per package.")] = True,
+    keep_latest: Annotated[
+        bool, typer.Option("--keep-latest/--all", help="Keep only latest wheel per package.")
+    ] = True,
     yes: Annotated[bool, typer.Option("--yes", "-y", help="Skip confirmation.")] = False,
 ) -> None:
     """
@@ -850,6 +908,7 @@ def cmd_cache_clean(
 
 
 # ─── Main entry point ─────────────────────────────────────────────────────────
+
 
 def main() -> None:
     """PPM CLI entry point."""

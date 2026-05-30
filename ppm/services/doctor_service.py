@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import shutil
 import sys
-from pathlib import Path
 
-from ppm.config import PPMConfig, PPM_CONFIG_FILE, PPM_WHEELHOUSE_DEFAULT
+from ppm.config import PPM_CONFIG_FILE, PPMConfig
 from ppm.environments import EnvironmentManager
 from ppm.models import DoctorCheck, DoctorReport
 from ppm.utils.console import get_logger
@@ -99,6 +98,7 @@ class DoctorService:
 
     def _check_internet_connectivity(self) -> DoctorCheck:
         import socket
+
         try:
             socket.create_connection(("pypi.org", 443), timeout=5)
             return DoctorCheck(
