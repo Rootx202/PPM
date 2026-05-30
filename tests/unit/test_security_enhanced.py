@@ -1,8 +1,8 @@
-
-import pytest
-from ppm.security import run_audit
-from unittest.mock import patch, MagicMock
 from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+from ppm.security import run_audit
+
 
 def test_run_audit_uses_run_safe():
     """Verify that run_audit calls run_safe and not subprocess.run directly."""
@@ -24,6 +24,7 @@ def test_run_audit_uses_run_safe():
             args, kwargs = mock_run_safe.call_args
             assert "/tmp/venv/bin/pip-audit" in args[0]
             assert kwargs["capture"] is True
+
 
 def test_validate_url_warns_on_http():
     """Verify that validate_url issues a warning for HTTP URLs."""

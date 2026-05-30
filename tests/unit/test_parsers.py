@@ -2,9 +2,11 @@
 
 import textwrap
 from pathlib import Path
+
 import pytest
-from ppm.parsers import parse_requirements, write_requirements
+
 from ppm.models import Requirement
+from ppm.parsers import parse_requirements, write_requirements
 
 
 def _write_reqs(tmp_path: Path, content: str) -> Path:
@@ -15,11 +17,14 @@ def _write_reqs(tmp_path: Path, content: str) -> Path:
 
 class TestParseRequirements:
     def test_simple_packages(self, tmp_path):
-        f = _write_reqs(tmp_path, """
+        f = _write_reqs(
+            tmp_path,
+            """
             requests
             flask
             django
-        """)
+        """,
+        )
         reqs = parse_requirements(f)
         names = [r.name for r in reqs if r.name]
         assert "requests" in names
@@ -27,23 +32,29 @@ class TestParseRequirements:
         assert "django" in names
 
     def test_version_specifiers(self, tmp_path):
-        f = _write_reqs(tmp_path, """
+        f = _write_reqs(
+            tmp_path,
+            """
             requests>=2.28.0
             flask==2.3.0
             django>=4.0,<5.0
-        """)
+        """,
+        )
         reqs = parse_requirements(f)
         named = {r.name: r for r in reqs if r.name}
         assert "requests" in named
         assert "flask" in named
 
     def test_skip_comments_and_blanks(self, tmp_path):
-        f = _write_reqs(tmp_path, """
+        f = _write_reqs(
+            tmp_path,
+            """
             # This is a comment
             requests  # inline comment
 
             flask
-        """)
+        """,
+        )
         reqs = parse_requirements(f)
         names = [r.name for r in reqs if r.name]
         assert "requests" in names
@@ -51,9 +62,12 @@ class TestParseRequirements:
         assert len(names) == 2
 
     def test_extras(self, tmp_path):
-        f = _write_reqs(tmp_path, """
+        f = _write_reqs(
+            tmp_path,
+            """
             httpx[http2]>=0.27
-        """)
+        """,
+        )
         reqs = parse_requirements(f)
         assert any(r.name and r.name.lower() == "httpx" for r in reqs)
 

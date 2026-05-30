@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
-from typing import Optional
 
 from ppm.models import AuditReport, Vulnerability, VulnerabilitySeverity
 from ppm.utils.console import get_logger
@@ -24,7 +23,7 @@ _SEVERITY_MAP: dict[str, VulnerabilitySeverity] = {
 
 def run_audit(
     pip_executable: Path,
-    requirements_file: Optional[Path] = None,
+    requirements_file: Path | None = None,
 ) -> AuditReport:
     """
     Execute pip-audit against the current environment or a requirements file.
@@ -39,9 +38,7 @@ def run_audit(
     # Determine pip-audit executable path (co-located with pip)
     pip_audit = _find_pip_audit(pip_executable)
     if not pip_audit:
-        return AuditReport(
-            error="pip-audit not found. Install it with: pip install pip-audit"
-        )
+        return AuditReport(error="pip-audit not found. Install it with: pip install pip-audit")
 
     cmd = [str(pip_audit), "--format", "json", "--progress-spinner", "off"]
 
@@ -64,7 +61,7 @@ def run_audit(
         return AuditReport(error=f"Audit failed: {e}")
 
 
-def _find_pip_audit(pip_executable: Path) -> Optional[Path]:
+def _find_pip_audit(pip_executable: Path) -> Path | None:
     """Locate pip-audit in the same venv bin directory as pip."""
     import shutil
 
@@ -136,7 +133,6 @@ def _infer_severity(vuln_id: str, aliases: list[str]) -> VulnerabilitySeverity:
     GHSA IDs don't embed severity; fall back to UNKNOWN.
     CVE-based IDs: use heuristic.
     """
-    vuln_id_lower = vuln_id.lower()
     for alias in [vuln_id] + aliases:
         alias_lower = alias.lower()
         for severity_str, severity_enum in _SEVERITY_MAP.items():
@@ -151,7 +147,7 @@ def check_deprecated_packages(packages: list[dict]) -> list[dict]:
     Returns list of dicts with package name and reason.
     """
     # Well-known deprecated packages
-    DEPRECATED: dict[str, str] = {
+    deprecated_packages: dict[str, str] = {
         "distribute": "Replaced by setuptools",
         "nose": "Use pytest instead",
         "mock": "Included in unittest.mock since Python 3.3",
@@ -168,12 +164,12 @@ def check_deprecated_packages(packages: list[dict]) -> list[dict]:
     results = []
     for pkg in packages:
         name = pkg.get("name", "").lower()
-        if name in DEPRECATED:
+        if name in deprecated_packages:
             results.append(
                 {
                     "package": pkg["name"],
                     "version": pkg.get("version", "?"),
-                    "warning": DEPRECATED[name],
+                    "warning": deprecated_packages[name],
                 }
             )
     return results

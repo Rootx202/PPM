@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 from ppm.config import PPMConfig
 from ppm.environments import EnvironmentManager
-from ppm.models import InstallResult
 from ppm.utils.console import get_logger
 from ppm.utils.security import run_safe
 
@@ -21,7 +19,7 @@ class RepairService:
         self.config = config
         self.env = env_manager
 
-    def repair(self, requirements_file: Optional[Path] = None) -> list[str]:
+    def repair(self, requirements_file: Path | None = None) -> list[str]:
         """
         Attempt to repair the environment.
 
@@ -36,15 +34,11 @@ class RepairService:
         actions: list[str] = []
 
         if not self.env.exists():
-            raise RuntimeError(
-                "No virtual environment found. Run 'ppm init' first."
-            )
+            raise RuntimeError("No virtual environment found. Run 'ppm init' first.")
 
         # ── Step 1: Upgrade pip, setuptools, wheel ─────────────────────────────
         logger.info("Upgrading pip, setuptools, wheel...")
-        ok, output = self.env.run_pip(
-            ["install", "--upgrade", "pip", "setuptools", "wheel"]
-        )
+        ok, output = self.env.run_pip(["install", "--upgrade", "pip", "setuptools", "wheel"])
         if ok:
             actions.append("✅ Upgraded pip, setuptools, wheel")
         else:
@@ -57,9 +51,7 @@ class RepairService:
             actions.append(f"⚠️  Found conflicts: {', '.join(conflicts)}")
             # Try to reinstall conflicting packages
             for pkg in conflicts:
-                ok, _ = self.env.run_pip(
-                    ["install", "--force-reinstall", "--no-deps", pkg]
-                )
+                ok, _ = self.env.run_pip(["install", "--force-reinstall", "--no-deps", pkg])
                 if ok:
                     actions.append(f"✅ Force-reinstalled: {pkg}")
                 else:
@@ -70,9 +62,7 @@ class RepairService:
         # ── Step 3: Reinstall from requirements.txt ────────────────────────────
         if requirements_file and requirements_file.exists():
             logger.info("Reinstalling from requirements.txt...")
-            ok, output = self.env.run_pip(
-                ["install", "-r", str(requirements_file), "--upgrade"]
-            )
+            ok, output = self.env.run_pip(["install", "-r", str(requirements_file), "--upgrade"])
             if ok:
                 actions.append("✅ Reinstalled requirements.txt packages")
             else:
@@ -103,6 +93,7 @@ class RepairService:
 
         # Parse output like: "package X Y requires package Z, but Z W is installed"
         import re
+
         conflicts: list[str] = []
         for line in result.stdout.splitlines():
             m = re.match(r"^([a-zA-Z0-9_-]+)\s", line)

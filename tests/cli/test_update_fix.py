@@ -1,11 +1,11 @@
-
-import pytest
-from typer.testing import CliRunner
-from ppm.cli.app import app
 from unittest.mock import MagicMock, patch
-from pathlib import Path
+
+from typer.testing import CliRunner
+
+from ppm.cli.app import app
 
 runner = CliRunner()
+
 
 def test_update_package_calls_service_with_upgrade():
     """Verify that 'ppm update <package>' calls InstallService.install with upgrade=True."""
@@ -28,8 +28,9 @@ def test_update_package_calls_service_with_upgrade():
             "fastapi", version_spec="", offline=False, upgrade=True
         )
 
+
 def test_update_all_calls_service_with_upgrade(tmp_path):
-    """Verify that 'ppm update' (all) calls InstallService.install with upgrade=True for each requirement."""
+    """Verify that 'ppm update' (all) calls InstallService.install with upgrade=True."""
     req_file = tmp_path / "requirements.txt"
     req_file.write_text("fastapi\nrequests")
 
@@ -45,10 +46,8 @@ def test_update_all_calls_service_with_upgrade(tmp_path):
         # We need to mock parse_requirements as well because it's imported inside the command
         with patch("ppm.parsers.parse_requirements") as mock_parse:
             from ppm.models import Requirement
-            mock_parse.return_value = [
-                Requirement(name="fastapi"),
-                Requirement(name="requests")
-            ]
+
+            mock_parse.return_value = [Requirement(name="fastapi"), Requirement(name="requests")]
 
             result = runner.invoke(app, ["update", "-r", str(req_file)])
 

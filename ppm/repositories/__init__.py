@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import Optional
 
 import httpx
 
@@ -64,9 +63,7 @@ class RepositoryManager:
                 repo.response_time_ms = elapsed
                 if resp.status_code < 500:
                     repo.status = (
-                        RepositoryStatus.SLOW
-                        if elapsed > 5000
-                        else RepositoryStatus.ONLINE
+                        RepositoryStatus.SLOW if elapsed > 5000 else RepositoryStatus.ONLINE
                     )
                 else:
                     repo.status = RepositoryStatus.OFFLINE
@@ -85,11 +82,12 @@ class RepositoryManager:
     def get_online_repositories(self) -> list[Repository]:
         """Return only repositories with ONLINE/SLOW status."""
         return [
-            r for r in self._repositories
+            r
+            for r in self._repositories
             if r.status in (RepositoryStatus.ONLINE, RepositoryStatus.SLOW)
         ]
 
-    async def fetch_package_info(self, package_name: str) -> Optional[dict]:
+    async def fetch_package_info(self, package_name: str) -> dict | None:
         """
         Fetch package metadata from PyPI JSON API.
         Returns parsed JSON dict or None on failure.
@@ -145,15 +143,9 @@ class RepositoryManager:
         results: list[dict] = []
         # Extract package snippets from search HTML
         # Pattern: <span class="package-snippet__name">NAME</span>
-        name_pat = re.compile(
-            r'class="package-snippet__name"[^>]*>\s*([^<]+)\s*</span>'
-        )
-        ver_pat = re.compile(
-            r'class="package-snippet__version"[^>]*>\s*([^<]+)\s*</span>'
-        )
-        desc_pat = re.compile(
-            r'class="package-snippet__description"[^>]*>\s*([^<]*)\s*</p>'
-        )
+        name_pat = re.compile(r'class="package-snippet__name"[^>]*>\s*([^<]+)\s*</span>')
+        ver_pat = re.compile(r'class="package-snippet__version"[^>]*>\s*([^<]+)\s*</span>')
+        desc_pat = re.compile(r'class="package-snippet__description"[^>]*>\s*([^<]*)\s*</p>')
 
         names = name_pat.findall(html)
         versions = ver_pat.findall(html)

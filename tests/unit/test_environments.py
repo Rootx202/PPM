@@ -1,9 +1,9 @@
 """Unit tests for environment manager."""
 
-import sys
+from unittest.mock import patch
+
 import pytest
-from pathlib import Path
-from unittest.mock import patch, MagicMock
+
 from ppm.environments import EnvironmentManager, detect_os
 from ppm.models import OSType
 

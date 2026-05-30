@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 from rich.console import Console
 from rich.logging import RichHandler
@@ -85,17 +84,24 @@ def print_banner() -> None:
     from ppm.update_checker import check_for_updates
 
     console.print(PPM_BANNER)
-    
+
     # Check for updates in the background cache
     new_version = check_for_updates()
     if new_version:
-        console.print(f"[bold bright_yellow]🚀 A new version of PPM ({new_version}) is available![/bold bright_yellow]")
-        console.print("[dim]Update using: [bold]pipx upgrade rootx-ppm[/bold] (or pip install --upgrade rootx-ppm)[/dim]")
-        
+        console.print(
+            f"[bold bright_yellow]🚀 A new version of PPM ({new_version}) "
+            "is available![/bold bright_yellow]"
+        )
+        console.print(
+            "[dim]Update using: [bold]pipx upgrade rootx-ppm[/bold] "
+            "(or pip install --upgrade rootx-ppm)[/dim]"
+        )
+
     console.print()
 
 
 # ─── Status helpers ───────────────────────────────────────────────────────────
+
 
 def success(msg: str) -> None:
     console.print(f"[ppm.success]✅ {msg}[/ppm.success]")
@@ -132,6 +138,7 @@ def result_panel(content: str, title: str = "Result", style: str = "cyan") -> No
 
 
 # ─── Progress bars ────────────────────────────────────────────────────────────
+
 
 def make_progress(description: str = "Processing") -> Progress:
     """Create a standard spinner + bar progress."""
@@ -172,7 +179,8 @@ def make_install_progress() -> Progress:
 
 # ─── Table helpers ────────────────────────────────────────────────────────────
 
-def make_table(title: str, *columns: tuple[str, Optional[str]]) -> Table:
+
+def make_table(title: str, *columns: tuple[str, str | None]) -> Table:
     """Create a styled Rich table."""
     table = Table(
         title=f"[ppm.brand]{title}[/ppm.brand]",

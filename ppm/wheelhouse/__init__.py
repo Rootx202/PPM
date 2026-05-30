@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 import re
 from pathlib import Path
-from typing import Optional
 
 from ppm.config import WheelhouseConfig
 from ppm.models import WheelEntry, WheelhouseStats
@@ -68,7 +67,7 @@ class WheelhouseManager:
             packages=sorted(unique_packages),
         )
 
-    def find_wheel(self, package_name: str, version: Optional[str] = None) -> Optional[WheelEntry]:
+    def find_wheel(self, package_name: str, version: str | None = None) -> WheelEntry | None:
         """
         Search for a cached wheel matching the given package name and optional version.
         Normalizes package name for comparison.
@@ -80,7 +79,7 @@ class WheelhouseManager:
                     return wheel
         return None
 
-    def add_wheel(self, source_path: Path) -> Optional[WheelEntry]:
+    def add_wheel(self, source_path: Path) -> WheelEntry | None:
         """
         Copy a wheel file into the wheelhouse.
         Returns the wheel entry if successful, None on failure.
@@ -98,11 +97,12 @@ class WheelhouseManager:
                 return self._parse_wheel_file(dest)
 
         import shutil
+
         shutil.copy2(source_path, dest)
         logger.info(f"Cached wheel: {dest.name}")
         return self._parse_wheel_file(dest)
 
-    def remove_wheel(self, package_name: str, version: Optional[str] = None) -> int:
+    def remove_wheel(self, package_name: str, version: str | None = None) -> int:
         """
         Remove wheel(s) matching package_name (and optionally version).
         Returns number of files removed.
@@ -206,7 +206,7 @@ class WheelhouseManager:
 
     # ─── Private helpers ──────────────────────────────────────────────────────
 
-    def _parse_wheel_file(self, path: Path) -> Optional[WheelEntry]:
+    def _parse_wheel_file(self, path: Path) -> WheelEntry | None:
         """Parse a wheel filename into a WheelEntry."""
         m = _WHEEL_FILENAME_RE.match(path.name)
         if not m:

@@ -1,15 +1,15 @@
 """Unit tests for validation utilities."""
 
 import pytest
+
 from ppm.utils.security import (
-    validate_package_name,
-    validate_url,
-    sanitize_package_name,
     safe_path,
     safe_subprocess_args,
+    sanitize_package_name,
+    validate_package_name,
     validate_pypi_url,
+    validate_url,
 )
-from pathlib import Path
 
 
 class TestPackageNameValidation:

@@ -1,9 +1,6 @@
 """Unit tests for the configuration manager."""
 
-import os
-import pytest
-from pathlib import Path
-from ppm.config import PPMConfig, RepositoryConfig, WheelhouseConfig
+from ppm.config import PPMConfig, RepositoryConfig
 
 
 class TestPPMConfig:
@@ -43,6 +40,7 @@ class TestPPMConfig:
     def test_save_and_load(self, tmp_path, monkeypatch):
         """Test round-trip save/load of config."""
         import ppm.config as cfg_module
+
         config_file = tmp_path / "config.toml"
         monkeypatch.setattr(cfg_module, "PPM_CONFIG_FILE", config_file)
         monkeypatch.setattr(cfg_module, "PPM_CONFIG_DIR", tmp_path)

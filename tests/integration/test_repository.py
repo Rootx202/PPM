@@ -1,11 +1,12 @@
 """Integration tests for repository manager."""
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-import asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
+
 from ppm.config import RepositoryConfig
-from ppm.repositories import RepositoryManager
 from ppm.models import RepositoryStatus
+from ppm.repositories import RepositoryManager
 
 
 class TestRepositoryManager:
@@ -38,6 +39,7 @@ class TestRepositoryManager:
     async def test_probe_repository_offline(self):
         """Test that offline probe sets status to OFFLINE."""
         import httpx
+
         repo = self.manager.repositories[0]
 
         with patch.object(
@@ -55,7 +57,7 @@ class TestRepositoryManager:
         mock_resp.status_code = 404
 
         with patch("httpx.AsyncClient.get", return_value=mock_resp):
-            result = await self.manager.fetch_package_info("totally-nonexistent-xyz123")
+            await self.manager.fetch_package_info("totally-nonexistent-xyz123")
             # Should return None for 404
             # (actual result depends on mock setup)
 

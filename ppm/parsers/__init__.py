@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import UTC
 from pathlib import Path
-from typing import Optional
 
 from ppm.models import Requirement
 from ppm.utils.console import get_logger
@@ -53,9 +53,7 @@ def _parse_file(
                     requirements.append(
                         Requirement(
                             name=req.name,
-                            version_spec="".join(
-                                f"{s[0]}{s[1]}" for s in (req.specs or [])
-                            ),
+                            version_spec="".join(f"{s[0]}{s[1]}" for s in (req.specs or [])),
                             extras=list(req.extras or []),
                             marker=str(req.marker) if req.marker else "",
                             url=req.uri or "",
@@ -193,5 +191,6 @@ def generate_lock_metadata(requirements: list[Requirement], pip_executable: Path
 
 def _iso_now() -> str:
     """Return current UTC time in ISO format."""
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat()
+    from datetime import datetime
+
+    return datetime.now(UTC).isoformat()

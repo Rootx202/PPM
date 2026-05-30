@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from typing import Optional
 
 from ppm.config import PPMConfig
 from ppm.environments import EnvironmentManager
@@ -142,7 +141,7 @@ class PackageInstaller:
                 )
 
             if attempt < self.config.repository.max_retries - 1:
-                wait = 2 ** attempt
+                wait = 2**attempt
                 logger.warning(
                     f"Install attempt {attempt + 1} failed for {package_name}. "
                     f"Retrying in {wait}s..."
@@ -155,7 +154,10 @@ class PackageInstaller:
             package=package_name,
             version="",
             success=False,
-            error=f"Failed after {self.config.repository.max_retries} attempts. Last error: {output.strip()}",
+            error=(
+                f"Failed after {self.config.repository.max_retries} attempts. "
+                f"Last error: {output.strip()}"
+            ),
             elapsed_seconds=elapsed,
         )
 

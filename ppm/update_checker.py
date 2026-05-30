@@ -5,14 +5,13 @@ from __future__ import annotations
 import json
 import time
 from pathlib import Path
-from typing import Optional
 
 import httpx
 
 from ppm.__init__ import __version__
 
 
-def check_for_updates() -> Optional[str]:
+def check_for_updates() -> str | None:
     """
     Check if a newer version of rootx-ppm is available on PyPI.
     Uses a 24-hour cache to avoid slowing down the CLI.
@@ -20,7 +19,7 @@ def check_for_updates() -> Optional[str]:
     """
     cache_file = Path.home() / ".config" / "ppm" / "update_check.json"
     now = time.time()
-    
+
     # 1. Check cache (24 hour TTL)
     if cache_file.exists():
         try:
@@ -38,19 +37,16 @@ def check_for_updates() -> Optional[str]:
         resp = httpx.get("https://pypi.org/pypi/rootx-ppm/json", timeout=1.0)
         if resp.status_code == 200:
             latest = resp.json()["info"]["version"]
-            
+
             # Save to cache
             cache_file.parent.mkdir(parents=True, exist_ok=True)
-            cache_file.write_text(json.dumps({
-                "last_check": now,
-                "latest_version": latest
-            }))
-            
+            cache_file.write_text(json.dumps({"last_check": now, "latest_version": latest}))
+
             if _is_newer(latest, __version__):
                 return latest
     except Exception:
         pass
-        
+
     return None
 
 
@@ -58,6 +54,7 @@ def _is_newer(latest: str, current: str) -> bool:
     """Compare two PEP 440 versions."""
     try:
         from packaging.version import parse
+
         return parse(latest) > parse(current)
     except Exception:
         return False

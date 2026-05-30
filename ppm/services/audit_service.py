@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 from ppm.config import PPMConfig
 from ppm.environments import EnvironmentManager
@@ -23,7 +22,7 @@ class AuditService:
 
     def audit(
         self,
-        requirements_file: Optional[Path] = None,
+        requirements_file: Path | None = None,
     ) -> tuple[AuditReport, list[dict]]:
         """
         Run pip-audit and check for deprecated packages.

@@ -35,9 +35,7 @@ class WheelhouseService:
         Returns (count of wheels, error messages).
         """
         if not requirements_file.exists():
-            raise FileNotFoundError(
-                f"Requirements file not found: {requirements_file}"
-            )
+            raise FileNotFoundError(f"Requirements file not found: {requirements_file}")
 
         index_args = self.repo.build_pip_index_args()
         return self.wheelhouse.build_from_requirements(

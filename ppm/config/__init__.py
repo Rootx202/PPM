@@ -3,18 +3,12 @@
 from __future__ import annotations
 
 import os
-import sys
+import tomllib  # type: ignore[no-redef]
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import tomli_w
-
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    import tomllib  # type: ignore[no-redef]
-
 from platformdirs import user_config_dir, user_data_dir
 
 # Default PPM home directory
@@ -35,6 +29,7 @@ DEFAULT_MIRRORS = [
 @dataclass
 class RepositoryConfig:
     """Repository configuration."""
+
     index_url: str = DEFAULT_INDEX_URL
     mirrors: list[str] = field(default_factory=lambda: list(DEFAULT_MIRRORS))
     timeout: int = 30
@@ -45,6 +40,7 @@ class RepositoryConfig:
 @dataclass
 class WheelhouseConfig:
     """Wheelhouse (cache) configuration."""
+
     path: Path = field(default_factory=lambda: PPM_WHEELHOUSE_DEFAULT)
     max_size_gb: float = 5.0
     auto_clean: bool = False
@@ -54,14 +50,16 @@ class WheelhouseConfig:
 @dataclass
 class LoggingConfig:
     """Logging configuration."""
+
     level: str = "INFO"
-    log_file: Optional[Path] = None
+    log_file: Path | None = None
     enable_rich: bool = True
 
 
 @dataclass
 class PPMConfig:
     """Root configuration object."""
+
     repository: RepositoryConfig = field(default_factory=RepositoryConfig)
     wheelhouse: WheelhouseConfig = field(default_factory=WheelhouseConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
@@ -69,7 +67,7 @@ class PPMConfig:
     venv_name: str = ".venv"
 
     @classmethod
-    def load(cls) -> "PPMConfig":
+    def load(cls) -> PPMConfig:
         """Load configuration from disk, falling back to defaults."""
         config = cls()
 
